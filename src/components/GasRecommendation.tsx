@@ -1,7 +1,7 @@
 import { GasType } from "../calculator/calculator";
-import StarIcon from "@mui/icons-material/Star";
 import { Row } from "./Flex";
 import styled from "@emotion/styled";
+import Grid from "@mui/material/Grid";
 
 const Text = styled(Row)`
   font-size: 20px;
@@ -9,22 +9,24 @@ const Text = styled(Row)`
 `;
 
 export type GasRecommendationProps = Readonly<{
-  ranking: number;
+  score: number;
   gasType: GasType;
+  rank: number;
+  spacing: number;
 }>;
-const getColor = (rank: number) => {
-  if (rank > 1) return "success";
-  if (rank === 1) return "action";
-  return "disabled";
-};
+
 export default function GasRecommendation({
-  ranking,
+  rank,
   gasType,
+  score,
+  spacing,
 }: GasRecommendationProps) {
+  console.log(spacing);
   return (
-    <Row>
-      <StarIcon fontSize="large" color={getColor(ranking)} />
-      <Text>{gasType}</Text>
-    </Row>
+    <Grid item xs={spacing >= 1 ? Math.floor(spacing) : 1}>
+      <Text>Type: {gasType}</Text>
+      <Text>Rank: {rank}</Text>
+      <Text>Miles Per Dollar: {score}</Text>
+    </Grid>
   );
 }

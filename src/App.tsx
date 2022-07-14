@@ -1,13 +1,14 @@
 import styled from "@emotion/styled";
 import Button from "@mui/material/Button";
+import Grid from "@mui/material/Grid";
 import { useState } from "react";
 import "./App.css";
 import {
   calculateGasValue,
   GasRequest,
+  GasScore,
   GasType,
 } from "./calculator/calculator";
-import { Row } from "./components/Flex";
 import GasInput from "./components/GasInput";
 import GasRecommendation from "./components/GasRecommendation";
 
@@ -22,11 +23,12 @@ const MainLayout = styled.div`
 `;
 
 export default function App() {
-  const [gasInputs, setGasInputs] = useState<GasRequest[]>([]);
-  const [calculatedValue, setCalculatedValue] = useState<GasRequest[]>();
+  const [gasRequests, setGasRequests] = useState<GasRequest[]>([]);
+  const [gasTypes, setGasTypes] = useState<GasType[]>(["E85", "87"]);
+  const [calculatedValue, setCalculatedValue] = useState<GasScore[]>();
   const onChange = (request: GasRequest) => {
     let found = false;
-    const newValue = gasInputs.map((currentValue) => {
+    const newValue = gasRequests.map((currentValue) => {
       if (currentValue.type === request.type) {
         found = true;
         return request;
@@ -36,12 +38,12 @@ export default function App() {
     if (!found) {
       newValue.push(request);
     }
-    setGasInputs(newValue);
+    setGasRequests(newValue);
   };
 
   const onGasTypeChange = (priorType: GasType, newValue: GasType) => {
-    setGasInputs(
-      gasInputs.map((value) => {
+    setGasRequests(
+      gasRequests.map((value) => {
         if (value.type === priorType) {
           return { ...value, type: newValue };
         }
@@ -51,40 +53,37 @@ export default function App() {
   };
 
   const handleCalculate = () => {
-    setCalculatedValue(calculateGasValue(gasInputs));
+    setCalculatedValue(calculateGasValue(gasRequests));
   };
 
   return (
     <MainLayout>
-      <GasInput
-        initGasType={"87"}
-        onPriceOrMpgChange={onChange}
-        onGasTypeChange={onGasTypeChange}
-      />
-      <GasInput
-        initGasType={"89"}
-        onPriceOrMpgChange={onChange}
-        onGasTypeChange={onGasTypeChange}
-      />
-      <GasInput
-        initGasType={"93"}
-        onPriceOrMpgChange={onChange}
-        onGasTypeChange={onGasTypeChange}
-      />
+      {gasTypes.map((input) => {
+        return (
+          <GasInput
+            key={input}
+            initGasType={input}
+            onPriceOrMpgChange={onChange}
+            onGasTypeChange={onGasTypeChange}
+          />
+        );
+      })}
       <Button variant="outlined" onClick={handleCalculate}>
         Calculate
       </Button>
-      <Row>
-        {calculatedValue?.map((value) => {
+      <Grid container spacing={2}>
+        {calculatedValue?.map((value, index) => {
           return (
             <GasRecommendation
               key={value.type}
-              ranking={value.price}
+              rank={index + 1}
+              score={value.score}
               gasType={value.type}
+              spacing={12 / calculatedValue.length}
             />
           );
         })}
-      </Row>
+      </Grid>
     </MainLayout>
   );
 }
