@@ -1,4 +1,5 @@
 import styled from "@emotion/styled";
+import Box from "@mui/material/Box";
 import Button from "@mui/material/Button";
 import Grid from "@mui/material/Grid";
 import { useState } from "react";
@@ -9,6 +10,7 @@ import {
   GasScore,
   GasType,
 } from "./calculator/calculator";
+import Banner from "./components/Banner";
 import GasInput from "./components/GasInput";
 import GasRecommendation from "./components/GasRecommendation";
 
@@ -57,33 +59,36 @@ export default function App() {
   };
 
   return (
-    <MainLayout>
-      {gasTypes.map((input) => {
-        return (
-          <GasInput
-            key={input}
-            initGasType={input}
-            onPriceOrMpgChange={onChange}
-            onGasTypeChange={onGasTypeChange}
-          />
-        );
-      })}
-      <Button variant="outlined" onClick={handleCalculate}>
-        Calculate
-      </Button>
-      <Grid container spacing={2}>
-        {calculatedValue?.map((value, index) => {
+    <Box>
+      <Banner />
+      <MainLayout>
+        {gasTypes.map((input) => {
           return (
-            <GasRecommendation
-              key={value.type}
-              rank={index + 1}
-              score={value.score}
-              gasType={value.type}
-              spacing={12 / calculatedValue.length}
+            <GasInput
+              key={input}
+              initGasType={input}
+              onPriceOrMpgChange={onChange}
+              onGasTypeChange={onGasTypeChange}
             />
           );
         })}
-      </Grid>
-    </MainLayout>
+        <Button variant="outlined" onClick={handleCalculate}>
+          Calculate
+        </Button>
+        <Grid container spacing={2}>
+          {calculatedValue?.map((value, index) => {
+            return (
+              <GasRecommendation
+                key={value.type}
+                rank={index + 1}
+                score={value.score}
+                gasType={value.type}
+                spacing={12 / calculatedValue.length}
+              />
+            );
+          })}
+        </Grid>
+      </MainLayout>
+    </Box>
   );
 }
